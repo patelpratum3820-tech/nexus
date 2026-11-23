@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Send,
   Sparkles,
@@ -9,7 +9,8 @@ import {
   ShieldAlert,
   Code2,
   FolderGit2,
-  Cpu
+  Cpu,
+  Square
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { Project } from '../../types';
@@ -19,6 +20,8 @@ interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
+  isMock?: boolean;
+  tps?: number;
 }
 
 interface ConversationWorkspaceProps {
@@ -38,32 +41,55 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
       role: 'assistant',
       content:
         'Welcome to NEXUS — your local-first personal AI operating system workspace.\n\n' +
-        'Phase 2.2 Local AI Discovery is active. The system connects safely to your local Ollama engine ' +
-        'without running inference or downloading models, preserving host CPU/RAM headroom.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        'Phase 2.3 Gemma 3:1B integration is active. Real local AI streaming runs directly ' +
+        'on your machine through Ollama on 127.0.0.1:11434 with strict hardware protection.',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMock: false
     }
   ]);
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [providerStatus, setProviderStatus] = useState<any>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     api.ai.getStatus().then(setProviderStatus).catch(() => {});
   }, []);
 
-  const handleSend = async () => {
-    if (!input.trim() || isTyping) return;
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+  };
 
+  const handleSend = async () => {
+    if (!input.trim() || isGenerating) return;
+
+    const userText = input.trim();
     const userMsg: Message = {
       id: `msg-${Date.now()}`,
       role: 'user',
-      content: input,
+      content: userText,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const assistantMsgId = `ai-${Date.now()}`;
+    const assistantPlaceholder: Message = {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMock: providerStatus?.is_mock_fallback ?? false
+    };
+
+    setMessages((prev) => [...prev, userMsg, assistantPlaceholder]);
     setInput('');
-    setIsTyping(true);
+    setIsGenerating(true);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const chatHistory = [...messages, userMsg].map((m) => ({
@@ -71,25 +97,86 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
         content: m.content
       }));
 
-      const res = await api.ai.chat(chatHistory);
+      await api.ai.streamChat(
+        chatHistory,
+        (chunk) => {
+          if (chunk.error) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMsgId
+                  ? {
+                      ...m,
+                      content: m.content
+                        ? `${m.content}\n\n[Notice: ${chunk.error}]`
+                        : `[Notice: ${chunk.error}]`
+                    }
+                  : m
+              )
+            );
+            return;
+          }
 
-      const aiMsg: Message = {
-        id: `ai-${Date.now()}`,
-        role: 'assistant',
-        content: res.reply || 'Acknowledged in local memory.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages((prev) => [...prev, aiMsg]);
+          if (chunk.token) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMsgId
+                  ? {
+                      ...m,
+                      content: m.content + chunk.token,
+                      isMock: chunk.provider === 'mock'
+                    }
+                  : m
+              )
+            );
+          }
+
+          if (chunk.done && chunk.tokens_per_second) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMsgId
+                  ? {
+                      ...m,
+                      tps: chunk.tokens_per_second
+                    }
+                  : m
+              )
+            );
+          }
+        },
+        'gemma3:1b',
+        controller.signal
+      );
     } catch (err: any) {
-      const errMsg: Message = {
-        id: `err-${Date.now()}`,
-        role: 'system',
-        content: `Simulation notice: ${err.message}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages((prev) => [...prev, errMsg]);
+      if (err.name === 'AbortError') {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMsgId
+              ? {
+                  ...m,
+                  content: m.content
+                    ? `${m.content}\n\n[Generation stopped by user]`
+                    : '[Generation stopped by user]'
+                }
+              : m
+          )
+        );
+      } else {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMsgId
+              ? {
+                  ...m,
+                  content: m.content
+                    ? `${m.content}\n\n[Inference error: ${err.message}]`
+                    : `[Inference error: ${err.message}]`
+                }
+              : m
+          )
+        );
+      }
     } finally {
-      setIsTyping(false);
+      setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -101,9 +188,9 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
   };
 
   const suggestions = [
-    { text: 'I want to build an e-commerce app and website', action: onStartDiscovery },
-    { text: 'What is the current hardware & resource usage?', action: () => setInput('What is the current resource status?') },
-    { text: 'Review stored architectural decisions and memory', action: () => setInput('Show active project decisions and memory tiers.') }
+    { text: 'What is NEXUS and what capabilities are active?', action: () => setInput('What is NEXUS and what capabilities are active?') },
+    { text: 'Check current system resources and RAM headroom', action: () => setInput('What is the current resource status?') },
+    { text: 'I want to build an e-commerce platform', action: onStartDiscovery }
   ];
 
   return (
@@ -120,12 +207,12 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
               <span className={`w-2 h-2 rounded-full ${providerStatus.ollama_available ? 'bg-emerald-400' : 'bg-amber-400'}`} />
               <span className="font-medium">
                 {providerStatus.ollama_available
-                  ? `Local AI Engine: ${providerStatus.active_display_name}`
+                  ? `Local AI Engine: ${providerStatus.active_display_name} — Gemma 3:1B Ready`
                   : 'Engine Offline: Visible Mock Simulation Active'}
               </span>
             </div>
             <span className="text-[10px] opacity-75 font-mono">
-              {providerStatus.ollama_available ? '127.0.0.1:11434 (Phase 2.2 Discovery)' : 'Mock Fallback Mode'}
+              {providerStatus.ollama_available ? '127.0.0.1:11434 (Phase 2.3 Streaming)' : 'Mock Fallback Mode'}
             </span>
           </div>
         </div>
@@ -155,13 +242,17 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
                   : 'bg-surface-elevated/90 border border-surface-border text-nexus-text'
               }`}
             >
-              <div className="whitespace-pre-wrap">{m.content}</div>
-              <div
-                className={`text-[9px] pt-1 text-right ${
-                  m.role === 'user' ? 'text-obsidian-300' : 'text-nexus-dim'
-                }`}
-              >
-                {m.timestamp}
+              <div className="whitespace-pre-wrap">{m.content || (isGenerating && m.role === 'assistant' ? 'Thinking...' : '')}</div>
+              <div className="flex items-center justify-between text-[9px] pt-1 gap-3">
+                {m.role === 'assistant' && (
+                  <span className={`font-mono ${m.isMock ? 'text-amber-400' : 'text-emerald-400'}`}>
+                    {m.isMock ? '🟡 mock-simulation' : '🟢 gemma3:1b (local)'}
+                    {m.tps ? ` • ${m.tps} t/s` : ''}
+                  </span>
+                )}
+                <span className={m.role === 'user' ? 'text-obsidian-300 ml-auto' : 'text-nexus-dim ml-auto'}>
+                  {m.timestamp}
+                </span>
               </div>
             </div>
 
@@ -173,15 +264,16 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
           </div>
         ))}
 
-        {isTyping && (
+        {isGenerating && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-lavender/15 border border-lavender/30 flex items-center justify-center text-lavender shrink-0">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="bg-surface-elevated border border-surface-border rounded-2xl px-4 py-2.5 text-xs text-nexus-muted flex items-center gap-1.5">
+            <div className="bg-surface-elevated border border-surface-border rounded-2xl px-4 py-2.5 text-xs text-nexus-muted flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-lavender animate-pulse" />
               <span className="w-1.5 h-1.5 rounded-full bg-lavender animate-pulse delay-75" />
               <span className="w-1.5 h-1.5 rounded-full bg-lavender animate-pulse delay-150" />
+              <span className="text-[11px] text-lavender font-mono">Generating local tokens...</span>
             </div>
           </div>
         )}
@@ -204,24 +296,37 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
           </div>
         )}
 
-        {/* Command D+ Style Obsidian Input Box */}
+        {/* Input Bar with Send / Stop Controls */}
         <div className="bg-surface-elevated/95 border border-surface-border focus-within:border-lavender/50 rounded-2xl p-2.5 flex items-end gap-2 shadow-2xl transition-all">
           <textarea
             rows={1}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Instruct NEXUS, manage a project, or type a requirement..."
-            className="flex-1 bg-transparent border-none text-xs text-nexus-text placeholder-nexus-dim px-2 py-1.5 focus:outline-none resize-none max-h-32"
+            placeholder={isGenerating ? "Generation in progress..." : "Instruct NEXUS with local Gemma 3:1B..."}
+            disabled={isGenerating}
+            className="flex-1 bg-transparent border-none text-xs text-nexus-text placeholder-nexus-dim px-2 py-1.5 focus:outline-none resize-none max-h-32 disabled:opacity-50"
           />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || isTyping}
-            className="p-2 rounded-xl bg-lavender text-obsidian-400 hover:bg-lavender-light disabled:opacity-30 transition-all shrink-0"
-            title="Send Message"
-          >
-            <Send className="w-4 h-4" />
-          </button>
+
+          {isGenerating ? (
+            <button
+              onClick={handleStop}
+              className="px-3 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 animate-pulse"
+              title="Stop Generation"
+            >
+              <Square className="w-3.5 h-3.5 fill-current" />
+              <span>Stop</span>
+            </button>
+          ) : (
+            <button
+              onClick={handleSend}
+              disabled={!input.trim()}
+              className="p-2 rounded-xl bg-lavender text-obsidian-400 hover:bg-lavender-light disabled:opacity-30 transition-all shrink-0"
+              title="Send Message"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -131,9 +131,28 @@ class MockAIProvider(BaseAIProvider):
         self,
         messages: List[Dict[str, str]],
         model_name: Optional[str] = None
-    ) -> AsyncGenerator[str, None]:
+    ) -> AsyncGenerator[Dict[str, Any], None]:
         res = await self.generate_response(messages, model_name)
         words = res["reply"].split(" ")
-        for w in words:
-            yield w + " "
+        for i, w in enumerate(words):
+            token_str = w if i == len(words) - 1 else w + " "
+            yield {
+                "token": token_str,
+                "done": False,
+                "model": model_name or "mock-llama3.2-1b",
+                "provider": "mock",
+                "is_mock": True
+            }
             await asyncio.sleep(0.02)
+
+        # Final completion event
+        yield {
+            "token": "",
+            "done": True,
+            "model": model_name or "mock-llama3.2-1b",
+            "provider": "mock",
+            "is_mock": True,
+            "eval_count": len(words),
+            "eval_duration_ms": int(len(words) * 20),
+            "tokens_per_second": 50.0
+        }

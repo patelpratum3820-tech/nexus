@@ -101,6 +101,33 @@ class ResourceManager:
         """The stricter of configured limit and hard safety boundary."""
         return max(self.min_ram_limit_gb, HARD_MIN_AVAILABLE_RAM_GB)
 
+    def check_inference_admission(self) -> tuple[bool, Optional[str]]:
+        """
+        Evaluates whether current system resources permit starting local AI inference:
+        - CPU percent must not exceed effective_max_cpu (<= 80.0%).
+        - Available RAM must not fall below effective_min_ram (>= 2.0 GB).
+        Returns (admitted: bool, reason_if_rejected: Optional[str]).
+        """
+        metrics = self.sample_metrics()
+        cpu = metrics["cpu_percent"]
+        avail_ram = metrics["ram_available_gb"]
+
+        if cpu > self.effective_max_cpu:
+            return (
+                False,
+                f"CPU utilization too high ({cpu}% > limit {self.effective_max_cpu}%). "
+                "Inference rejected to preserve system and Antigravity responsiveness."
+            )
+
+        if avail_ram < self.effective_min_ram:
+            return (
+                False,
+                f"Available RAM too low ({avail_ram} GB < reserve {self.effective_min_ram} GB). "
+                "Inference rejected to preserve Antigravity & OS priority reserve."
+            )
+
+        return True, None
+
     def update_and_persist_limits(
         self,
         max_cpu_percent: Optional[float] = None,

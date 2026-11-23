@@ -86,6 +86,6 @@ class BaseAIProvider(ABC):
         self,
         messages: List[Dict[str, str]],
         model_name: Optional[str] = None
-    ) -> AsyncGenerator[str, None]:
-        """Stream generated tokens incrementally."""
+    ) -> AsyncGenerator[Dict[str, Any], None]:
+        """Stream generated token dictionaries incrementally."""
         pass

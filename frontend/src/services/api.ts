@@ -133,6 +133,59 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages, model_name: modelName })
       }),
+    streamChat: async (
+      messages: { role: string; content: string }[],
+      onChunk: (chunk: {
+        token: string;
+        done: boolean;
+        model?: string;
+        provider?: string;
+        error?: string;
+        tokens_per_second?: number;
+        eval_count?: number;
+      }) => void,
+      modelName: string = 'gemma3:1b',
+      signal?: AbortSignal
+    ): Promise<void> => {
+      const response = await fetch(`${API_BASE}/ai/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, model_name: modelName }),
+        signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Streaming error`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('Response stream unavailable');
+
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('data:')) {
+            const dataStr = trimmed.slice(5).trim();
+            if (dataStr) {
+              try {
+                const parsed = JSON.parse(dataStr);
+                onChunk(parsed);
+              } catch (_) {}
+            }
+          }
+        }
+      }
+    },
     getHardware: () => safeFetch<any>(`${API_BASE}/ai/hardware`),
     getModels: () => safeFetch<any[]>(`${API_BASE}/ai/models`, undefined, [])
   }
