@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Send,
   Sparkles,
@@ -8,7 +8,8 @@ import {
   ArrowRight,
   ShieldAlert,
   Code2,
-  FolderGit2
+  FolderGit2,
+  Cpu
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { Project } from '../../types';
@@ -37,13 +38,18 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
       role: 'assistant',
       content:
         'Welcome to NEXUS — your local-first personal AI operating system workspace.\n\n' +
-        'In Phase 1, the core architecture, resource manager, multi-tier memory, and project discovery engine are active. ' +
-        'Local AI inference is running in zero-resource simulation mode to protect your hardware until Phase 2.',
+        'Phase 2.2 Local AI Discovery is active. The system connects safely to your local Ollama engine ' +
+        'without running inference or downloading models, preserving host CPU/RAM headroom.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [providerStatus, setProviderStatus] = useState<any>(null);
+
+  useEffect(() => {
+    api.ai.getStatus().then(setProviderStatus).catch(() => {});
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -102,6 +108,29 @@ export const ConversationWorkspace: React.FC<ConversationWorkspaceProps> = ({
 
   return (
     <div className="h-full flex flex-col justify-between overflow-hidden relative select-none">
+      {/* Provider Discovery Status Banner */}
+      {providerStatus && (
+        <div className="px-6 pt-3 max-w-4xl mx-auto w-full">
+          <div className={`flex items-center justify-between px-3 py-1.5 rounded-xl border text-[11px] ${
+            providerStatus.ollama_available
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${providerStatus.ollama_available ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+              <span className="font-medium">
+                {providerStatus.ollama_available
+                  ? `Local AI Engine: ${providerStatus.active_display_name}`
+                  : 'Engine Offline: Visible Mock Simulation Active'}
+              </span>
+            </div>
+            <span className="text-[10px] opacity-75 font-mono">
+              {providerStatus.ollama_available ? '127.0.0.1:11434 (Phase 2.2 Discovery)' : 'Mock Fallback Mode'}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6 max-w-4xl mx-auto w-full">
         {messages.map((m) => (

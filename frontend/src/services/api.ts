@@ -126,6 +126,7 @@ export const api = {
   },
 
   ai: {
+    getStatus: () => safeFetch<any>(`${API_BASE}/ai/status`),
     chat: (messages: { role: string; content: string }[], modelName?: string) =>
       safeFetch<any>(`${API_BASE}/ai/chat`, {
         method: 'POST',
