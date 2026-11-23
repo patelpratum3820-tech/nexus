@@ -1,14 +1,18 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'path';
+import fs from 'fs';
 import { ProcessManager } from './processManager';
+
+delete process.env.ELECTRON_RUN_AS_NODE;
 
 let mainWindow: BrowserWindow | null = null;
 let companionWindow: BrowserWindow | null = null;
 let isExplicitQuitting = false;
 const processMgr = new ProcessManager();
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 const ROOT_DIR = path.resolve(__dirname, '..', '..');
+const hasDist = fs.existsSync(path.join(ROOT_DIR, 'frontend', 'dist', 'index.html'));
+const isDev = process.env.NODE_ENV === 'development' || (!app.isPackaged && !hasDist);
 
 async function createMainWindow() {
   mainWindow = new BrowserWindow({
