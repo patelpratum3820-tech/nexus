@@ -1,0 +1,6 @@
+Model,Type,Cold Load (s),Warm Median Speed (tok/s),Warm Median Latency (s),Peak RAM (GB),Avg CPU (%),Quality Score (1-5)
+phi4-mini:latest,Chat,4.72,11.12,17.8,12.18,54.3,4.8
+qwen3:1.7b,Chat,2.7,20.21,25.48,11.36,57.7,3.0
+qwen2.5-coder:1.5b,Chat,1.94,25.64,20.11,10.7,53.7,4.0
+gemma3:1b,Chat,2.51,26.99,19.23,10.44,53.9,4.4
+nomic-embed-text:latest,Embedding,N/A,N/A,0.702,9.77,29.4,N/A (768 dims)

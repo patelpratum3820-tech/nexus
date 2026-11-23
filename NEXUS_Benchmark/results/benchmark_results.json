@@ -1,0 +1,341 @@
+{
+  "timestamp": "2026-11-23 19:50:00",
+  "hardware": {
+    "os": "Windows 11",
+    "cpu": "Intel Core i3-1215U (6 cores / 8 threads)",
+    "ram_total_gb": 15.7,
+    "gpu": "Intel UHD Graphics (Integrated)",
+    "storage": "512 GB SSD"
+  },
+  "chat_benchmarks": {
+    "phi4-mini:latest": {
+      "cold_start": {
+        "load_duration_s": 4.72,
+        "total_duration_s": 20.12,
+        "eval_count": 163,
+        "generation_tokens_per_sec": 11.19,
+        "prompt_tokens_per_sec": 48.2,
+        "telemetry": {
+          "peak_cpu": 72.7,
+          "avg_cpu": 54.3,
+          "baseline_ram_used_gb": 9.43,
+          "peak_ram_used_gb": 12.18,
+          "ram_delta_gb": 2.75,
+          "min_avail_ram_gb": 3.52
+        }
+      },
+      "warm_start": {
+        "median_latency_s": 17.8,
+        "median_generation_tokens_per_sec": 11.12,
+        "min_tps": 9.6,
+        "max_tps": 11.43,
+        "all_latencies_s": [
+          15.16,
+          17.8,
+          23.31
+        ],
+        "all_tps": [
+          9.6,
+          11.12,
+          11.43
+        ]
+      },
+      "quality": {
+        "average_score": 4.8,
+        "tests": {
+          "test_a_general": {
+            "score": 4,
+            "criteria": "Technical accuracy & practical example",
+            "passed": true
+          },
+          "test_b_reasoning": {
+            "score": 5,
+            "criteria": "Math & dependency reasoning (Expected: 7 hours)",
+            "passed": true
+          },
+          "test_c_planning": {
+            "score": 5,
+            "criteria": "6-step realistic plan tailored to i3-1215U/16GB",
+            "passed": true
+          },
+          "test_d_coding": {
+            "score": 5,
+            "criteria": "Code syntax & safety handling",
+            "passed": true
+          },
+          "test_e_instruction": {
+            "score": 5,
+            "criteria": "Exactly 3 numbered steps, 1 sentence each, no intro/outro",
+            "passed": true
+          }
+        }
+      }
+    },
+    "qwen3:1.7b": {
+      "cold_start": {
+        "load_duration_s": 2.7,
+        "total_duration_s": 28.83,
+        "eval_count": 512,
+        "generation_tokens_per_sec": 19.97,
+        "prompt_tokens_per_sec": 64.79,
+        "telemetry": {
+          "peak_cpu": 82.0,
+          "avg_cpu": 57.7,
+          "baseline_ram_used_gb": 9.58,
+          "peak_ram_used_gb": 11.36,
+          "ram_delta_gb": 1.78,
+          "min_avail_ram_gb": 4.34
+        }
+      },
+      "warm_start": {
+        "median_latency_s": 25.48,
+        "median_generation_tokens_per_sec": 20.21,
+        "min_tps": 18.23,
+        "max_tps": 21.24,
+        "all_latencies_s": [
+          24.28,
+          25.48,
+          28.6
+        ],
+        "all_tps": [
+          18.23,
+          20.21,
+          21.24
+        ]
+      },
+      "quality": {
+        "average_score": 3.0,
+        "tests": {
+          "test_a_general": {
+            "score": 3,
+            "criteria": "Technical accuracy & practical example",
+            "passed": true,
+            "response_excerpt": "A local AI assistant works by using a combination of **pre-trained models**, **natural language processing (NLP)**, and **machine learning** to understand and respond to user queries. Here's a simplified breakdown:\n\n1. **Input**: The user types a question or statement (e.g., \"Wha...",
+            "full_response": "A local AI assistant works by using a combination of **pre-trained models**, **natural language processing (NLP)**, and **machine learning** to understand and respond to user queries. Here's a simplified breakdown:\n\n1. **Input**: The user types a question or statement (e.g., \"What's the capital of France?\").  \n2. **Processing**:  \n   - The assistant uses **NLP algorithms** to parse the query, identify key terms (e.g., \"capital\"), and determine the user's intent (e.g., factual knowledge).  \n   - It applies **machine learning models** (trained on vast datasets) to generate a response based on patterns learned from training data.  \n  ",
+            "eval_count": 512,
+            "eval_duration_s": 26.72
+          },
+          "test_b_reasoning": {
+            "score": 2,
+            "criteria": "Math & dependency reasoning (Expected: 7 hours)",
+            "passed": false,
+            "response_excerpt": "",
+            "full_response": "",
+            "eval_count": 512,
+            "eval_duration_s": 26.5
+          },
+          "test_c_planning": {
+            "score": 3,
+            "criteria": "6-step realistic plan tailored to i3-1215U/16GB",
+            "passed": false,
+            "response_excerpt": "",
+            "full_response": "",
+            "eval_count": 512,
+            "eval_duration_s": 25.67
+          },
+          "test_d_coding": {
+            "score": 2,
+            "criteria": "Code syntax & safety handling (No function definition found in code.)",
+            "passed": false,
+            "response_excerpt": "",
+            "full_response": "",
+            "eval_count": 512,
+            "eval_duration_s": 25.46
+          },
+          "test_e_instruction": {
+            "score": 5,
+            "criteria": "Exactly 3 numbered steps, 1 sentence each, no intro/outro",
+            "passed": true,
+            "response_excerpt": "1. Design the AI with clear, explainable decision-making frameworks to ensure users can understand and trust its actions.  \n2. Incorporate diverse and representative datasets to reduce biases and ensure the AI reflects a broad range of perspectives.  \n3. Implement regular audits ...",
+            "full_response": "1. Design the AI with clear, explainable decision-making frameworks to ensure users can understand and trust its actions.  \n2. Incorporate diverse and representative datasets to reduce biases and ensure the AI reflects a broad range of perspectives.  \n3. Implement regular audits and updates to monitor performance and address emerging risks or vulnerabilities.",
+            "eval_count": 298,
+            "eval_duration_s": 14.31
+          }
+        }
+      }
+    },
+    "qwen2.5-coder:1.5b": {
+      "cold_start": {
+        "load_duration_s": 1.94,
+        "total_duration_s": 10.23,
+        "eval_count": 208,
+        "generation_tokens_per_sec": 26.87,
+        "prompt_tokens_per_sec": 90.83,
+        "telemetry": {
+          "peak_cpu": 74.0,
+          "avg_cpu": 53.7,
+          "baseline_ram_used_gb": 9.61,
+          "peak_ram_used_gb": 10.7,
+          "ram_delta_gb": 1.09,
+          "min_avail_ram_gb": 5.0
+        }
+      },
+      "warm_start": {
+        "median_latency_s": 20.11,
+        "median_generation_tokens_per_sec": 25.64,
+        "min_tps": 24.72,
+        "max_tps": 26.16,
+        "all_latencies_s": [
+          19.71,
+          20.11,
+          21.05
+        ],
+        "all_tps": [
+          24.72,
+          25.64,
+          26.16
+        ]
+      },
+      "quality": {
+        "average_score": 4.0,
+        "tests": {
+          "test_a_general": {
+            "score": 4,
+            "criteria": "Technical accuracy & practical example",
+            "passed": true,
+            "response_excerpt": "A local AI assistant works by using machine learning algorithms to analyze and understand the user's input. It then uses this information to provide relevant and helpful responses. Here's a simple example:\n\nImagine you have a local AI assistant that helps you with your daily task...",
+            "full_response": "A local AI assistant works by using machine learning algorithms to analyze and understand the user's input. It then uses this information to provide relevant and helpful responses. Here's a simple example:\n\nImagine you have a local AI assistant that helps you with your daily tasks. When you ask it to do something, like \"What's the weather today? \", the assistant uses machine learning algorithms to analyze the input and determine the most likely answer. It then uses this information to provide you with the correct answer. For example, if you ask it \"What's the weather today? \", it might analyze the input and determine that it's raining. It then uses this information to provide you with the correct answer, which is \"It's raining.\"",
+            "eval_count": 147,
+            "eval_duration_s": 5.49
+          },
+          "test_b_reasoning": {
+            "score": 2,
+            "criteria": "Math & dependency reasoning (Expected: 7 hours)",
+            "passed": false,
+            "response_excerpt": "To determine the minimum completion time for the project, we need to consider the dependencies and the timing of the tasks. Here's a step-by-step approach to solve this problem:\n\n1. **Identify the tasks and their dependencies:**\n   - Task A takes 4 hours.\n   - Task B takes 2 hour...",
+            "full_response": "To determine the minimum completion time for the project, we need to consider the dependencies and the timing of the tasks. Here's a step-by-step approach to solve this problem:\n\n1. **Identify the tasks and their dependencies:**\n   - Task A takes 4 hours.\n   - Task B takes 2 hours.\n   - Task C takes 3 hours.\n   - Task C depends on both Task A and Task B.\n\n2. **Determine the time it takes for Task C to start:**\n   - Since Task C depends on both Task A and Task B, it cannot start until both Task A and Task B have been completed.\n   - Task A takes 4 hours, and Task B takes 2 hours. Therefore, the minimum time for both tasks to be completed together is the sum of their individual times.\n   - \\(4 + 2 = 6\\) hours.\n\n3. **Calculate the total completion time:**\n   - Once Task C starts, it will take 3 hours to complete.\n   - Therefore, the total completion time for the project is the sum of the time it takes for Task C to start and the time it takes for Task C to complete.\n   - \\(6 + 3 = 9\\) hours.\n\nThus, the minimum completion time for the project is \\(\\boxed{9}\\) hours.",
+            "eval_count": 275,
+            "eval_duration_s": 10.22
+          },
+          "test_c_planning": {
+            "score": 5,
+            "criteria": "6-step realistic plan tailored to i3-1215U/16GB",
+            "passed": true,
+            "response_excerpt": "Sure, here is a practical six-step implementation plan for building NEXUS on a computer with 16 GB RAM and Intel i3-1215U:\n\n1. **Set up the development environment**:\n   - Install Node.js and npm on your computer.\n   - Install Python and pip on your computer.\n   - Install Visual ...",
+            "full_response": "Sure, here is a practical six-step implementation plan for building NEXUS on a computer with 16 GB RAM and Intel i3-1215U:\n\n1. **Set up the development environment**:\n   - Install Node.js and npm on your computer.\n   - Install Python and pip on your computer.\n   - Install Visual Studio Code or any other code editor of your choice.\n   - Install Tauri CLI by running `npm install -g @tauri-apps/cli`.\n\n2. **Create a new Tauri project**:\n   - Run `tauri create nexus` to create a new Tauri project.\n   - Choose the \"React\" template and select the \"TypeScript\" language.\n\n3. **Set up the React project**:\n   - Install the necessary dependencies by running `npm install`.\n   - Create the necessary components and pages for your NEXUS application.\n\n4. **Set up the TypeScript project**:\n   - Install the necessary dependencies by running `npm install`.\n   - Create the necessary types and interfaces for your NEXUS application.\n\n5. **Set up the Python FastAPI project**:\n   - Install the necessary dependencies by running `pip install fastapi uvicorn`.\n   - Create the necessary routes and endpoints for your NEXUS application.\n\n6. **Set up the SQLite database**:\n   - Install the necessary dependencies by running `pip install sqlite3`.\n   - Create the necessary tables and models for your NEXUS application.\n\n7. **Test the application**:\n   - Run the Tauri application by running `tauri dev` in the terminal.\n   - Test the application by interacting with the different components and pages.\n   - Test the Python FastAPI application by running `uvicorn main:app --reload` in the terminal.\n   - Test the SQLite database by running the necessary SQL queries.\n\nBy following these six steps, you should be able to build a practical NEXUS application on a computer with 16 GB RAM and Intel i3-1215U.",
+            "eval_count": 421,
+            "eval_duration_s": 16.29
+          },
+          "test_d_coding": {
+            "score": 5,
+            "criteria": "Code syntax & safety handling (Valid Python AST with function definition. Try-except error handling: True.)",
+            "passed": true,
+            "response_excerpt": "```python\nimport json\n\ndef safe_load_json(file_path):\n    \"\"\"\n    Safely reads a JSON file. If the file does not exist or the JSON is invalid, returns an empty dictionary.\n    \n    Args:\n    file_path (str): The path to the JSON file.\n    \n    Returns:\n    dict: A dictionary cont...",
+            "full_response": "```python\nimport json\n\ndef safe_load_json(file_path):\n    \"\"\"\n    Safely reads a JSON file. If the file does not exist or the JSON is invalid, returns an empty dictionary.\n    \n    Args:\n    file_path (str): The path to the JSON file.\n    \n    Returns:\n    dict: A dictionary containing the JSON data or an empty dictionary if loading fails.\n    \"\"\"\n    try:\n        with open(file_path, 'r') as file:\n            data = json.load(file)\n            return data\n    except FileNotFoundError:\n        print(f\"File {file_path} not found.\")\n        return {}\n    except json.JSONDecodeError:\n        print(f\"Invalid JSON in file {file_path}.\")\n        return {}\n\n# Test the function\ndef test_safe_load_json():\n    # Test with a valid JSON file\n    valid_json_file = \"data.json\"\n    with open(valid_json_file, 'w') as file:\n        json.dump({\"name\": \"Alice\", \"age\": 30}, file)\n    \n    # Test with a non-existent file\n    non_existent_file = \"non_existent.json\"\n    \n    # Test with an invalid JSON file\n    invalid_json_file = \"invalid_json.json\"\n    with open(invalid_json_file, 'w') as file:\n        file.write(\"This is not valid JSON\")\n    \n    # Check the results\n    assert safe_load_json(valid_json_file) == {\"name\": \"Alice\", \"age\": 30}, \"Test with valid JSON failed.\"\n    assert safe_load_json(non_existent_file) == {}, \"Test with non-existent file failed.\"\n    assert safe_load_json(invalid_json_file) == {}, \"Test with invalid JSON failed.\"\n    \n    print(\"All tests passed!\")\n\ntest_safe_load_json()\n```\n\nIn this solution, the `safe_load_json` function attempts to open and parse a JSON file. It handles `FileNotFoundError` and `json.JSONDecodeError` exceptions to gracefully manage cases where the file is missing or the JSON is invalid. The `test_safe_load_json` function tests the `safe_load_json` function with a valid JSON file, a non-existent file, and an invalid JSON file, ensuring that the function behaves as expected in these scenarios.",
+            "eval_count": 459,
+            "eval_duration_s": 18.03
+          },
+          "test_e_instruction": {
+            "score": 4,
+            "criteria": "Exactly 3 numbered steps, 1 sentence each, no intro/outro",
+            "passed": true,
+            "response_excerpt": "1. **Define the AI's Purpose**: Clearly define the AI's primary function, whether it's to assist with tasks, provide information, or perform specific actions. This will guide the design of the AI's capabilities and interactions.\n\n2. **Design the AI's Architecture**: Plan the arch...",
+            "full_response": "1. **Define the AI's Purpose**: Clearly define the AI's primary function, whether it's to assist with tasks, provide information, or perform specific actions. This will guide the design of the AI's capabilities and interactions.\n\n2. **Design the AI's Architecture**: Plan the architecture of the AI, including the components and their interactions. This includes deciding on the programming language, the type of machine learning models to use, and the data storage and processing systems.\n\n3. **Implement the AI**: Write the code to implement the AI's architecture. This involves writing the algorithms, implementing the machine learning models, and integrating the data processing systems.",
+            "eval_count": 131,
+            "eval_duration_s": 4.88
+          }
+        }
+      }
+    },
+    "gemma3:1b": {
+      "cold_start": {
+        "load_duration_s": 2.51,
+        "total_duration_s": 21.88,
+        "eval_count": 512,
+        "generation_tokens_per_sec": 27.26,
+        "prompt_tokens_per_sec": 49.84,
+        "telemetry": {
+          "peak_cpu": 75.8,
+          "avg_cpu": 53.9,
+          "baseline_ram_used_gb": 9.57,
+          "peak_ram_used_gb": 10.44,
+          "ram_delta_gb": 0.87,
+          "min_avail_ram_gb": 5.26
+        }
+      },
+      "warm_start": {
+        "median_latency_s": 19.23,
+        "median_generation_tokens_per_sec": 26.99,
+        "min_tps": 26.09,
+        "max_tps": 27.58,
+        "all_latencies_s": [
+          19.15,
+          19.23,
+          19.85
+        ],
+        "all_tps": [
+          26.09,
+          26.99,
+          27.58
+        ]
+      },
+      "quality": {
+        "average_score": 4.4,
+        "tests": {
+          "test_a_general": {
+            "score": 5,
+            "criteria": "Technical accuracy & practical example",
+            "passed": true,
+            "response_excerpt": "Okay, let's break down how a local AI assistant works, focusing on a simplified explanation with a practical example.\n\n**What is a Local AI Assistant?**\n\nA local AI assistant is essentially a computer program that can understand and respond to your requests without relying on the...",
+            "full_response": "Okay, let's break down how a local AI assistant works, focusing on a simplified explanation with a practical example.\n\n**What is a Local AI Assistant?**\n\nA local AI assistant is essentially a computer program that can understand and respond to your requests without relying on the cloud. It runs entirely on your device (phone, laptop, etc.) and utilizes techniques like machine learning and natural language processing (NLP) to perform tasks. Think of it as a personal assistant that lives *within* your device.\n\n**Here\u2019s a breakdown of the key components and how it works:**\n\n1. **Data Collection & Training:**\n   - **Initial Data:** The assistant starts with a massive dataset \u2013 think millions of text and code examples, images, and audio \u2013 that it learns from. This data covers a wide range of topics and conversational styles.\n   - **Fine-Tuning:**  The assistant then gets fine-tuned on a smaller, more specific dataset relevant to your particular needs and voice. For example, if you want it to be good at summarizing news articles, it\u2019s fine-tuned on news articles.\n\n2. **Core Technologies:**\n   - **Natural Language Understanding (NLU):** This is the heart of the assistant. NLU allows the AI to understand *what* you're saying. It analyzes your text (or voice) to identify the intent (what you want to do) and entities (the key pieces of information you're providing \u2013 like dates, locations, or names).\n   - **Machine Learning (ML):**  ML algorithms are used to build models that predict the best response based on your input. This is how the assistant learns and improves over time.\n   - **Speech Recognition (ASR - Automatic Speech Recognition):** If you're speaking, ASR converts your voice into text.\n   - **Text-to-Speech (TTS):** If you're speaking, TTS converts the text response back into spoken words.\n\n3. **Response Generation:**\n   - **Retrieval:** The assistant has a knowledge base (a collection of information it\u2019s learned) that it can search through.\n   - **Prediction:** Based on your input and the knowledge base, the ML model predicts the most likely and relevant response.\n   - **Text Generation:** The model then generates the actual text of the response.\n\n4. **Local Execution:**\n   - **Processing:** All of this happens *locally* on your device",
+            "eval_count": 512,
+            "eval_duration_s": 19.03
+          },
+          "test_b_reasoning": {
+            "score": 2,
+            "criteria": "Math & dependency reasoning (Expected: 7 hours)",
+            "passed": false,
+            "response_excerpt": "Here's the breakdown of the minimum completion time and the reasoning:\n\n**1. Calculate the Total Work Required:**\n\n*   Task A: 4 hours\n*   Task B: 2 hours\n*   Task C: 3 hours\n*   **Total Work = 4 + 2 + 3 = 9 hours**\n\n**2. Determine the Minimum Completion Time:**\n\n*   Since tasks ...",
+            "full_response": "Here's the breakdown of the minimum completion time and the reasoning:\n\n**1. Calculate the Total Work Required:**\n\n*   Task A: 4 hours\n*   Task B: 2 hours\n*   Task C: 3 hours\n*   **Total Work = 4 + 2 + 3 = 9 hours**\n\n**2. Determine the Minimum Completion Time:**\n\n*   Since tasks A and B can run simultaneously, they can complete their work concurrently.\n*   Therefore, the minimum completion time is simply the time it takes to complete the combined work.\n\n**3. Minimum Completion Time:**\n\n*   Minimum Completion Time = 9 hours\n\n**Therefore, the minimum completion time for the project is 9 hours.**\n\n**Reasoning:**\n\nThe key is to recognize that tasks A and B are independent.  They don't block each other's progress.  Therefore, they can be working at the same time, reducing the overall time needed.",
+            "eval_count": 205,
+            "eval_duration_s": 7.49
+          },
+          "test_c_planning": {
+            "score": 5,
+            "criteria": "6-step realistic plan tailored to i3-1215U/16GB",
+            "passed": true,
+            "response_excerpt": "Okay, let's craft a practical six-step implementation plan for your NEXUS project with those constraints. This plan prioritizes a solid foundation while acknowledging the limitations of the hardware.  We'll focus on building a core functionality and iteratively expanding.\n\n**Goal...",
+            "full_response": "Okay, let's craft a practical six-step implementation plan for your NEXUS project with those constraints. This plan prioritizes a solid foundation while acknowledging the limitations of the hardware.  We'll focus on building a core functionality and iteratively expanding.\n\n**Goal:** Create a functional, basic AI assistant that can respond to simple queries and perform a limited set of tasks within the constraints of 16GB RAM and an i3-1215U.\n\n**Assumptions:**\n\n*   You're comfortable with basic command-line interfaces (CLI) and a bit of JavaScript.\n*   You're familiar with the core technologies (React, TypeScript, Tauri, Python FastAPI, SQLite).\n*   You're aiming for a manageable, testable project.\n\n**Six-Step Implementation Plan:**\n\n**Step 1: Core Functionality - Simple Query Handler (2-3 Days)**\n\n* **Goal:**  Implement a basic CLI interface that takes user input and returns a pre-defined response.\n* **Technologies:** React, TypeScript, Tauri.\n* **Tasks:**\n    * **Create a basic React component:**  This will be the main interface.\n    * **Define a simple data structure:**  A dictionary to store the knowledge base (e.g., a list of keywords, facts, or a simple knowledge graph).\n    * **Implement a `handleQuery(query)` function:** This function takes user input, parses it (using TypeScript's type system), and returns a response.\n    * **Initial Response:**  Create a simple \"Hello, NEXUS!\" response.\n* **Focus:**  Get the core functionality working \u2013 a simple command-line interface.\n* **Hardware Considerations:**  Keep the UI light.  Don't over-optimize for performance.\n\n**Step 2: SQLite Database Setup & Basic Data Model (3-4 Days)**\n\n* **Goal:**  Establish a SQLite database to store the knowledge base and user preferences.\n* **Technologies:** SQLite, TypeScript, React.\n* **Tasks:**\n    * **Create a SQLite database:**  Use a tool like `sqlite3` in the command line.\n    * **Define a table:**  A table to store keywords, facts, and potentially user preferences.  Start with a small, manageable table.\n    * **Implement `saveData(data)` and `loadData(dbName)` functions:**  These functions will handle saving and loading",
+            "eval_count": 512,
+            "eval_duration_s": 18.69
+          },
+          "test_d_coding": {
+            "score": 5,
+            "criteria": "Code syntax & safety handling (Valid Python AST with function definition. Try-except error handling: True.)",
+            "passed": true,
+            "response_excerpt": "```python\nimport json\n\ndef load_json_safely(filepath):\n    \"\"\"\n    Safely reads a JSON file, handles missing files and invalid JSON, \n    and returns an empty dictionary if loading fails.\n\n    Args:\n        filepath (str): The path to the JSON file.\n\n    Returns:\n        dict: A ...",
+            "full_response": "```python\nimport json\n\ndef load_json_safely(filepath):\n    \"\"\"\n    Safely reads a JSON file, handles missing files and invalid JSON, \n    and returns an empty dictionary if loading fails.\n\n    Args:\n        filepath (str): The path to the JSON file.\n\n    Returns:\n        dict: A dictionary containing the data from the JSON file, or an empty \n              dictionary if loading fails.\n    \"\"\"\n    try:\n        with open(filepath, 'r') as f:\n            data = json.load(f)\n        return data\n    except FileNotFoundError:\n        print(f\"Error: File not found at {filepath}\")\n        return {}\n    except json.JSONDecodeError:\n        print(f\"Error: Invalid JSON in file {filepath}\")\n        return {}\n    except Exception as e:  # Catch any other potential errors\n        print(f\"An unexpected error occurred: {e}\")\n        return {}\n\nif __name__ == '__main__':\n    # Test case 1: Successful loading\n    data = load_json_safely(\"data.json\")\n    print(\"Test Case 1: Successful loading\")\n    print(data)\n\n    # Test case 2: File not found\n    data = load_json_safely(\"nonexistent_file.json\")\n    print(\"\\nTest Case 2: File not found\")\n    print(data)\n\n    # Test case 3: Invalid JSON\n    data = load_json_safely(\"invalid.json\")\n    print(\"\\nTest Case 3: Invalid JSON\")\n    print(data)\n```\n\nKey improvements and explanations:\n\n* **Error Handling:**  The code now includes comprehensive error handling using `try...except` blocks:\n    * `FileNotFoundError`: Catches the case where the file doesn't exist.\n    * `json.JSONDecodeError`: Catches the case where the file contains invalid JSON.  This is crucial for robustness.\n    * `Exception`:  A general `except` block is added to catch any *other* unexpected errors that might occur during file reading or JSON parsing.  This prevents the program from crashing due to unforeseen issues.\n* **Clear Error Messages:**  The `print` statements inside the `except` blocks provide informative error messages to the user, indicating the specific problem (file",
+            "eval_count": 512,
+            "eval_duration_s": 18.76
+          },
+          "test_e_instruction": {
+            "score": 5,
+            "criteria": "Exactly 3 numbered steps, 1 sentence each, no intro/outro",
+            "passed": true,
+            "response_excerpt": "1.  Establish clear and limited scope for the AI\u2019s capabilities and tasks to minimize potential harm.\n2.  Implement robust safeguards incorporating human oversight and fail-safe mechanisms for critical decisions.\n3.  Continuously monitor and evaluate the AI\u2019s performance and beha...",
+            "full_response": "1.  Establish clear and limited scope for the AI\u2019s capabilities and tasks to minimize potential harm.\n2.  Implement robust safeguards incorporating human oversight and fail-safe mechanisms for critical decisions.\n3.  Continuously monitor and evaluate the AI\u2019s performance and behavior through testing and feedback loops.",
+            "eval_count": 63,
+            "eval_duration_s": 2.19
+          }
+        }
+      }
+    }
+  },
+  "embedding_benchmark": {
+    "model": "nomic-embed-text:latest",
+    "dimensions": 768,
+    "total_time_s": 0.702,
+    "time_per_vector_s": 0.234,
+    "sim_tech_to_desktop": 0.5211,
+    "sim_tech_to_food": 0.321,
+    "semantic_discrimination_valid": true,
+    "telemetry": {
+      "peak_cpu": 29.4,
+      "avg_cpu": 29.4,
+      "baseline_ram_used_gb": 9.5,
+      "peak_ram_used_gb": 9.77,
+      "ram_delta_gb": 0.27,
+      "min_avail_ram_gb": 5.93
+    }
+  }
+}

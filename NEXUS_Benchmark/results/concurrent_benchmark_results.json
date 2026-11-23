@@ -1,0 +1,131 @@
+{
+  "timestamp": "2026-11-23 20:28:26",
+  "hardware": {
+    "os": "Windows 11",
+    "cpu": "Intel Core i3-1215U (6 cores / 8 threads)",
+    "total_ram_gb": 15.7,
+    "gpu": "Intel UHD Graphics"
+  },
+  "scenarios": {
+    "scenario_1_baseline": {
+      "description": "Antigravity actively coding, no Ollama generation",
+      "model": "None (Idle)",
+      "telemetry": {
+        "baseline_ram_used_gb": 9.84,
+        "peak_ram_used_gb": 9.85,
+        "ram_delta_gb": 0.01,
+        "min_avail_ram_gb": 5.85,
+        "avg_sys_cpu": 19.9,
+        "peak_sys_cpu": 28.8,
+        "baseline_antigravity_mb": 2499.8,
+        "peak_antigravity_mb": 2499.8,
+        "baseline_ollama_mb": 137.8,
+        "peak_ollama_mb": 137.8,
+        "ollama_ram_delta_mb": 0.0
+      },
+      "dev_operations": 963,
+      "inference": null,
+      "recovery_time_s": 0.0
+    },
+    "scenario_2_gemma3": {
+      "description": "Antigravity actively coding + Gemma 3:1B",
+      "model": "gemma3:1b",
+      "telemetry": {
+        "baseline_ram_used_gb": 9.84,
+        "peak_ram_used_gb": 10.69,
+        "ram_delta_gb": 0.85,
+        "min_avail_ram_gb": 5.01,
+        "avg_sys_cpu": 67.9,
+        "peak_sys_cpu": 79.6,
+        "baseline_antigravity_mb": 2475.6,
+        "peak_antigravity_mb": 2479.0,
+        "baseline_ollama_mb": 140.5,
+        "peak_ollama_mb": 141.4,
+        "ollama_ram_delta_mb": 0.9
+      },
+      "dev_operations": 838,
+      "inference": {
+        "load_duration_s": 1.92,
+        "total_duration_s": 22.27,
+        "eval_count": 512,
+        "tokens_per_sec": 25.86
+      },
+      "recovery_time_s": 4.03
+    },
+    "scenario_3_qwencoder": {
+      "description": "Antigravity actively coding + Qwen 2.5 Coder:1.5B",
+      "model": "qwen2.5-coder:1.5b",
+      "telemetry": {
+        "baseline_ram_used_gb": 9.86,
+        "peak_ram_used_gb": 10.95,
+        "ram_delta_gb": 1.09,
+        "min_avail_ram_gb": 4.75,
+        "avg_sys_cpu": 65.7,
+        "peak_sys_cpu": 76.6,
+        "baseline_antigravity_mb": 2494.9,
+        "peak_antigravity_mb": 2499.3,
+        "baseline_ollama_mb": 141.0,
+        "peak_ollama_mb": 141.8,
+        "ollama_ram_delta_mb": 0.8
+      },
+      "dev_operations": 777,
+      "inference": {
+        "load_duration_s": 1.92,
+        "total_duration_s": 19.46,
+        "eval_count": 402,
+        "tokens_per_sec": 23.88
+      },
+      "recovery_time_s": 4.02
+    },
+    "scenario_4_phi4": {
+      "description": "Antigravity actively coding + Phi-4-mini",
+      "model": "phi4-mini:latest",
+      "telemetry": {
+        "baseline_ram_used_gb": 9.85,
+        "peak_ram_used_gb": 12.6,
+        "ram_delta_gb": 2.75,
+        "min_avail_ram_gb": 3.1,
+        "avg_sys_cpu": 64.5,
+        "peak_sys_cpu": 88.0,
+        "baseline_antigravity_mb": 2486.8,
+        "peak_antigravity_mb": 2491.4,
+        "baseline_ollama_mb": 141.6,
+        "peak_ollama_mb": 141.6,
+        "ollama_ram_delta_mb": 0.0
+      },
+      "dev_operations": 1042,
+      "inference": {
+        "load_duration_s": 5.24,
+        "total_duration_s": 27.94,
+        "eval_count": 213,
+        "tokens_per_sec": 10.12
+      },
+      "recovery_time_s": 4.01
+    },
+    "scenario_5_nomic": {
+      "description": "Antigravity actively coding + Nomic embeddings",
+      "model": "nomic-embed-text:latest",
+      "telemetry": {
+        "baseline_ram_used_gb": 9.64,
+        "peak_ram_used_gb": 9.93,
+        "ram_delta_gb": 0.29,
+        "min_avail_ram_gb": 5.77,
+        "avg_sys_cpu": 50.2,
+        "peak_sys_cpu": 50.2,
+        "baseline_antigravity_mb": 2437.7,
+        "peak_antigravity_mb": 2437.7,
+        "baseline_ollama_mb": 140.7,
+        "peak_ollama_mb": 141.2,
+        "ollama_ram_delta_mb": 0.5
+      },
+      "dev_operations": 93,
+      "inference": {
+        "load_duration_s": 0.0,
+        "total_duration_s": 1.042,
+        "eval_count": 5,
+        "tokens_per_sec": 4.8
+      },
+      "recovery_time_s": 3.02
+    }
+  }
+}

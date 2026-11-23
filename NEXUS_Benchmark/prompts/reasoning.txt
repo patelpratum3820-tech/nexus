@@ -1,0 +1,1 @@
+A project has three independent tasks. Task A takes 4 hours, task B takes 2 hours and task C takes 3 hours. Tasks A and B can run simultaneously, but C depends on both. Explain the minimum completion time and your reasoning.

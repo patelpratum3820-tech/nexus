@@ -1,0 +1,1 @@
+Write a Python function that safely reads a JSON file, handles missing files and invalid JSON, and returns an empty dictionary if loading fails. Include a small test.

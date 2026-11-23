@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/nexus-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS — Local-First Personal AI Operating System</title>
+    <style>
+      /* Prevent white flash on startup */
+      html, body {
+        background-color: #0B0C10;
+        color: #F0F1F7;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body class="bg-obsidian text-nexus-text antialiased selection:bg-lavender/20 selection:text-lavender">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

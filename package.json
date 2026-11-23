@@ -1,0 +1,11 @@
+{
+  "name": "nexus-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "backend:test": "python -m unittest discover -s backend/tests -p \"test_*.py\"",
+    "backend:start": "python backend/app/main.py",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build"
+  }
+}

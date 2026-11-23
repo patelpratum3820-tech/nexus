@@ -1,0 +1,1 @@
+I am building NEXUS, a local-first Windows AI assistant with React, TypeScript, Tauri, Python FastAPI and SQLite. Create a practical six-step implementation plan for a computer with 16 GB RAM and Intel i3-1215U.

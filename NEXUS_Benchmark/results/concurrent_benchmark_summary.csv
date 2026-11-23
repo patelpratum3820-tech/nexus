@@ -1,0 +1,6 @@
+Scenario,Model,Ollama Peak RAM (MB),Ollama RAM Delta (MB),Antigravity RAM (MB),Peak System RAM (GB),Min Avail RAM (GB),Avg CPU (%),Peak CPU (%),Gen Speed (tok/s),Recovery Time (s)
+scenario_1_baseline,None (Idle),137.8,0.0,2499.8,9.85,5.85,19.9,28.8,N/A,0.0
+scenario_2_gemma3,gemma3:1b,141.4,0.9,2479.0,10.69,5.01,67.9,79.6,25.86,4.03
+scenario_3_qwencoder,qwen2.5-coder:1.5b,141.8,0.8,2499.3,10.95,4.75,65.7,76.6,23.88,4.02
+scenario_4_phi4,phi4-mini:latest,141.6,0.0,2491.4,12.6,3.1,64.5,88.0,10.12,4.01
+scenario_5_nomic,nomic-embed-text:latest,141.2,0.5,2437.7,9.93,5.77,50.2,50.2,4.8,3.02

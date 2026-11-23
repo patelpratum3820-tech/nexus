@@ -1,0 +1,29 @@
+{
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "repetitions": 3,
+  "resource_sample_interval_sec": 0.5,
+  "cooldown_sec": 3.0,
+  "stream": false,
+  "hardware": {
+    "os": "Windows 11",
+    "cpu": "Intel Core i3-1215U",
+    "ram_gb": 16,
+    "gpu": "Intel UHD Graphics (Integrated)",
+    "storage": "512 GB SSD"
+  },
+  "tests": [
+    { "id": "test_a_general", "name": "General Assistance", "file": "prompts/general.txt" },
+    { "id": "test_b_reasoning", "name": "Reasoning & Scheduling", "file": "prompts/reasoning.txt" },
+    { "id": "test_c_planning", "name": "NEXUS Architecture Plan", "file": "prompts/planning.txt" },
+    { "id": "test_d_coding", "name": "Safe JSON Python Coding", "file": "prompts/coding.txt" },
+    { "id": "test_e_instruction", "name": "Strict Instruction Following", "file": "prompts/instruction_following.txt" }
+  ],
+  "embedding_tests": {
+    "model": "nomic-embed-text:latest",
+    "samples": [
+      "NEXUS local AI assistant project planning and architecture.",
+      "Developing a local-first desktop application with SQLite and Python.",
+      "A delicious recipe for homemade Italian pasta with marinara sauce."
+    ]
+  }
+}

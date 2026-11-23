@@ -1,0 +1,1 @@
+Return exactly three numbered steps for designing a safe local AI assistant. Each step must contain one sentence. Do not include an introduction or conclusion.

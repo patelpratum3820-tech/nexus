@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Build outputs
+frontend/dist/
+desktop/dist/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Database files & logs
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
+*.log
+
+# Windows / OS files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Ollama local binary directory
+olama/
+*.exe
+
