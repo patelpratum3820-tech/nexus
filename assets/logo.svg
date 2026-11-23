@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="nexusGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/>
+      <stop offset="60%" stop-color="#6366f1" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#090b10" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Node & Line Gradients -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+
+    <linearGradient id="cyanAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <filter id="coreGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Ambient Backdrop Glow -->
+  <circle cx="256" cy="256" r="230" fill="url(#nexusGlow)" />
+
+  <!-- Outer Orbital Geometric Ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#2e285a" stroke-width="2" stroke-dasharray="4 8" opacity="0.6"/>
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#4338ca" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Hexagonal Shield Housing -->
+  <polygon points="256,76 396,156 396,356 256,436 116,356 116,156" 
+           fill="url(#shieldGrad)" stroke="url(#primaryGrad)" stroke-width="3.5" stroke-linejoin="round" />
+
+  <!-- Inner Interconnected Neural Geometry -->
+  <!-- Top Node to Center & Sides -->
+  <line x1="256" y1="130" x2="256" y2="256" stroke="#8b5cf6" stroke-width="3" opacity="0.8" />
+  <line x1="256" y1="130" x2="176" y2="210" stroke="#6366f1" stroke-width="2" opacity="0.6" />
+  <line x1="256" y1="130" x2="336" y2="210" stroke="#6366f1" stroke-width="2" opacity="0.6" />
+
+  <!-- Center to Lateral Nodes -->
+  <line x1="256" y1="256" x2="156" y2="256" stroke="url(#cyanAccent)" stroke-width="3" opacity="0.8" />
+  <line x1="256" y1="256" x2="356" y2="256" stroke="url(#cyanAccent)" stroke-width="3" opacity="0.8" />
+
+  <!-- Center to Bottom Nodes -->
+  <line x1="256" y1="256" x2="196" y2="360" stroke="#8b5cf6" stroke-width="2.5" opacity="0.7" />
+  <line x1="256" y1="256" x2="316" y2="360" stroke="#8b5cf6" stroke-width="2.5" opacity="0.7" />
+  <line x1="196" y1="360" x2="316" y2="360" stroke="#6366f1" stroke-width="2" opacity="0.5" />
+
+  <!-- Peripheral Satellite Nodes -->
+  <circle cx="256" cy="130" r="9" fill="#c4b5fd" filter="url(#coreGlow)" />
+  <circle cx="176" cy="210" r="6" fill="#a78bfa" />
+  <circle cx="336" cy="210" r="6" fill="#a78bfa" />
+  <circle cx="156" cy="256" r="8" fill="#38bdf8" />
+  <circle cx="356" cy="256" r="8" fill="#38bdf8" />
+  <circle cx="196" cy="360" r="7" fill="#818cf8" />
+  <circle cx="316" cy="360" r="7" fill="#818cf8" />
+
+  <!-- Central Nexus Core -->
+  <circle cx="256" cy="256" r="28" fill="#0f172a" stroke="url(#primaryGrad)" stroke-width="4" filter="url(#coreGlow)" />
+  <circle cx="256" cy="256" r="14" fill="url(#cyanAccent)" />
+  <circle cx="256" cy="256" r="6" fill="#ffffff" />
+</svg>
