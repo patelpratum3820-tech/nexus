@@ -11,6 +11,8 @@ from typing import Dict, Any, Optional, List
 from app.core.config import (
     MAX_SAFE_CPU_PERCENT,
     MIN_SAFE_AVAILABLE_RAM_GB,
+    HARD_MAX_CPU_PERCENT,
+    HARD_MIN_AVAILABLE_RAM_GB,
     RESOURCE_SAMPLE_INTERVAL_SEC,
     RESOURCE_IDLE_SAMPLE_INTERVAL_SEC
 )
@@ -61,19 +63,25 @@ class ResourceManager:
         self._load_persisted_settings()
 
     def _load_persisted_settings(self):
-        """Load user-configured limits from SQLite, preserving safe defaults."""
+        """Load user-configured limits from SQLite, enforcing non-overridable hard boundaries."""
         try:
             persisted_cpu = get_setting("max_cpu_percent")
             if persisted_cpu:
                 val = float(persisted_cpu)
-                if 50.0 <= val <= 95.0:
+                # Settings can only be stricter than or equal to hard boundary (<= 80.0%)
+                if 20.0 <= val <= HARD_MAX_CPU_PERCENT:
                     self.max_cpu_limit = val
+                else:
+                    self.max_cpu_limit = HARD_MAX_CPU_PERCENT
 
             persisted_ram = get_setting("min_ram_limit_gb")
             if persisted_ram:
                 val = float(persisted_ram)
-                if 1.0 <= val <= 6.0:
+                # Settings can only be stricter than or equal to hard boundary (>= 2.0 GB)
+                if HARD_MIN_AVAILABLE_RAM_GB <= val <= 8.0:
                     self.min_ram_limit_gb = val
+                else:
+                    self.min_ram_limit_gb = HARD_MIN_AVAILABLE_RAM_GB
 
             persisted_tasks = get_setting("max_concurrent_tasks")
             if persisted_tasks:
@@ -83,22 +91,45 @@ class ResourceManager:
         except Exception:
             pass
 
+    @property
+    def effective_max_cpu(self) -> float:
+        """The stricter of configured limit and hard safety boundary."""
+        return min(self.max_cpu_limit, HARD_MAX_CPU_PERCENT)
+
+    @property
+    def effective_min_ram(self) -> float:
+        """The stricter of configured limit and hard safety boundary."""
+        return max(self.min_ram_limit_gb, HARD_MIN_AVAILABLE_RAM_GB)
+
     def update_and_persist_limits(
         self,
         max_cpu_percent: Optional[float] = None,
         min_ram_gb: Optional[float] = None,
         max_concurrent_tasks: Optional[int] = None
     ) -> Dict[str, Any]:
-        """Validate, apply, and persist resource thresholds."""
+        """
+        Validate, apply, and persist resource thresholds.
+        Non-overridable safety boundaries:
+        - max_cpu_percent cannot exceed HARD_MAX_CPU_PERCENT (80.0%). Stricter is allowed, weaker is rejected.
+        - min_ram_gb cannot fall below HARD_MIN_AVAILABLE_RAM_GB (2.0 GB). Stricter is allowed, weaker is rejected.
+        """
         if max_cpu_percent is not None:
-            if not (50.0 <= max_cpu_percent <= 95.0):
-                raise ValueError(f"max_cpu_percent must be between 50.0 and 95.0, got {max_cpu_percent}")
+            if max_cpu_percent > HARD_MAX_CPU_PERCENT:
+                raise ValueError(
+                    f"max_cpu_percent cannot exceed hard safety limit of {HARD_MAX_CPU_PERCENT}%, got {max_cpu_percent}%"
+                )
+            if max_cpu_percent < 40.0:
+                raise ValueError(f"max_cpu_percent must be at least 40.0%, got {max_cpu_percent}%")
             self.max_cpu_limit = float(max_cpu_percent)
             set_setting("max_cpu_percent", str(self.max_cpu_limit))
 
         if min_ram_gb is not None:
-            if not (1.0 <= min_ram_gb <= 6.0):
-                raise ValueError(f"min_ram_gb must be between 1.0 and 6.0, got {min_ram_gb}")
+            if min_ram_gb < HARD_MIN_AVAILABLE_RAM_GB:
+                raise ValueError(
+                    f"min_ram_gb cannot be lower than hard safety reserve of {HARD_MIN_AVAILABLE_RAM_GB} GB, got {min_ram_gb} GB"
+                )
+            if min_ram_gb > 8.0:
+                raise ValueError(f"min_ram_gb cannot exceed 8.0 GB, got {min_ram_gb} GB")
             self.min_ram_limit_gb = float(min_ram_gb)
             set_setting("min_ram_limit_gb", str(self.min_ram_limit_gb))
 
@@ -109,8 +140,8 @@ class ResourceManager:
             set_setting("max_concurrent_tasks", str(self.max_concurrent_tasks))
 
         return {
-            "max_cpu_percent": self.max_cpu_limit,
-            "min_ram_gb": self.min_ram_limit_gb,
+            "max_cpu_percent": self.effective_max_cpu,
+            "min_ram_gb": self.effective_min_ram,
             "max_concurrent_tasks": self.max_concurrent_tasks,
             "active_workers": self.active_workers
         }
@@ -183,11 +214,14 @@ class ResourceManager:
         ram = self._get_ram_info()
         cpu = self._get_system_cpu()
 
-        # Determine health status
+        # Determine health status using effective (strictest) limits
         status = "normal"
         can_start_heavy = True
 
-        if ram["avail_gb"] < self.min_ram_limit_gb or cpu > self.max_cpu_limit:
+        effective_ram = self.effective_min_ram
+        effective_cpu = self.effective_max_cpu
+
+        if ram["avail_gb"] < effective_ram or cpu > effective_cpu:
             status = "constrained"
             can_start_heavy = False
 
@@ -205,7 +239,8 @@ class ResourceManager:
             "active_tasks_count": len(self.active_workers),
             "can_start_heavy_task": can_start_heavy and len(self.active_workers) < self.max_concurrent_tasks,
             "antigravity_priority_active": True,
-            "min_ram_headroom_gb": self.min_ram_limit_gb,
+            "min_ram_headroom_gb": effective_ram,
+            "max_cpu_threshold_percent": effective_cpu,
             "timestamp": time.time()
         }
         self._last_metrics = metrics

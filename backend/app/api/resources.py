@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.services.resource_mgr import ResourceManager
+from app.core.config import HARD_MAX_CPU_PERCENT, HARD_MIN_AVAILABLE_RAM_GB
 
 router = APIRouter(prefix="/api/resources", tags=["Resources"])
 mgr = ResourceManager.get_instance()
@@ -25,10 +26,14 @@ def get_metrics():
 @router.get("/limits")
 def get_limits():
     return {
-        "max_cpu_percent": mgr.max_cpu_limit,
-        "min_ram_gb": mgr.min_ram_limit_gb,
+        "max_cpu_percent": mgr.effective_max_cpu,
+        "min_ram_gb": mgr.effective_min_ram,
         "max_concurrent_tasks": mgr.max_concurrent_tasks,
-        "active_workers": mgr.active_workers
+        "active_workers": mgr.active_workers,
+        "hard_boundaries": {
+            "max_cpu_percent": HARD_MAX_CPU_PERCENT,
+            "min_ram_gb": HARD_MIN_AVAILABLE_RAM_GB
+        }
     }
 
 

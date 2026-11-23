@@ -6,6 +6,26 @@ export class ProcessManager {
   private backendPid: number | null = null;
   private isShuttingDown: boolean = false;
 
+  // Strict ownership tracking: only PIDs explicitly spawned by NEXUS are registered and terminable.
+  // NEXUS must NEVER terminate external or unverified processes such as an independently running Ollama service.
+  private ownedPids: Set<number> = new Set();
+
+  public isOwnedProcess(pid: number): boolean {
+    return this.ownedPids.has(pid);
+  }
+
+  public registerOwnedProcess(pid: number): void {
+    this.ownedPids.add(pid);
+  }
+
+  public unregisterOwnedProcess(pid: number): void {
+    this.ownedPids.delete(pid);
+  }
+
+  public getOwnedPids(): number[] {
+    return Array.from(this.ownedPids);
+  }
+
   public startBackend(baseDir: string): Promise<boolean> {
     return new Promise((resolve) => {
       const pythonExecutable = 'python';
@@ -21,7 +41,8 @@ export class ProcessManager {
 
       if (this.backendProcess.pid) {
         this.backendPid = this.backendProcess.pid;
-        console.log(`[ProcessManager] Backend running with PID: ${this.backendPid}`);
+        this.registerOwnedProcess(this.backendProcess.pid);
+        console.log(`[ProcessManager] Backend running with PID: ${this.backendPid} (Registered as NEXUS-owned)`);
       }
 
       this.backendProcess.stdout?.on('data', (data) => {
@@ -41,6 +62,9 @@ export class ProcessManager {
 
       this.backendProcess.on('exit', (code) => {
         console.log(`[ProcessManager] Backend process exited with code ${code}`);
+        if (this.backendPid) {
+          this.unregisterOwnedProcess(this.backendPid);
+        }
         this.backendProcess = null;
         this.backendPid = null;
       });
@@ -53,12 +77,13 @@ export class ProcessManager {
   public async stopAll(): Promise<void> {
     if (this.isShuttingDown) return;
     this.isShuttingDown = true;
-    console.log('[ProcessManager] Cleaning up NEXUS processes...');
+    console.log('[ProcessManager] Cleaning up NEXUS-owned processes...');
 
-    // 1. Attempt graceful HTTP shutdown
+    // 1. Attempt graceful HTTP shutdown and model unloading
+    // Tells the backend to unload any NEXUS-loaded models and cleanly terminate
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 800);
+      const timeout = setTimeout(() => controller.abort(), 1200);
       await fetch('http://127.0.0.1:8765/api/system/shutdown', {
         method: 'POST',
         signal: controller.signal
@@ -68,13 +93,24 @@ export class ProcessManager {
       // Ignore network errors during shutdown
     }
 
-    // 2. Terminate child process tree on Windows if still running
+    // 2. Strict ownership verification:
+    // Only terminate processes NEXUS explicitly launched and registered in ownedPids.
+    // If process ownership cannot be established, DO NOT terminate the process.
+    // NEVER terminate independently running external services like Ollama.
     if (this.backendPid) {
       const pid = this.backendPid;
       this.backendPid = null;
+
+      if (!this.isOwnedProcess(pid)) {
+        console.warn(`[ProcessManager] Skipped termination for PID ${pid}: ownership could not be verified.`);
+        return;
+      }
+
+      this.unregisterOwnedProcess(pid);
+
       if (process.platform === 'win32') {
         exec(`taskkill /F /T /PID ${pid}`, (err) => {
-          if (!err) console.log(`[ProcessManager] Force terminated process tree PID ${pid}`);
+          if (!err) console.log(`[ProcessManager] Force terminated NEXUS-owned process tree PID ${pid}`);
         });
       } else {
         try {

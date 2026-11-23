@@ -39,6 +39,12 @@ class BaseAIProvider(ABC):
         """Human-readable name."""
         pass
 
+    @property
+    @abstractmethod
+    def loaded_model(self) -> Optional[str]:
+        """Name of the currently loaded model, if loaded by NEXUS."""
+        pass
+
     @abstractmethod
     async def is_available(self) -> bool:
         """Check if provider engine or service is installed and reachable."""

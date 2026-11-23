@@ -19,6 +19,11 @@ RESOURCE_IDLE_SAMPLE_INTERVAL_SEC = 15.0
 MAX_SAFE_CPU_PERCENT = 80.0
 MIN_SAFE_AVAILABLE_RAM_GB = 2.0
 
+# Non-Overridable Hard Safety Boundaries (Protect Antigravity & Windows Priority)
+# User settings may be stricter, but can NEVER weaken these boundaries.
+HARD_MAX_CPU_PERCENT = 80.0          # Task admission threshold: cannot exceed 80.0%
+HARD_MIN_AVAILABLE_RAM_GB = 2.0     # RAM reserve boundary: cannot fall below 2.0 GB
+
 # Antigravity & OS Priority Constraints
 ANTIGRAVITY_PRIORITY_RESERVE_RAM_GB = 2.0
 SINGLE_MODEL_RESIDENCE_ONLY = True

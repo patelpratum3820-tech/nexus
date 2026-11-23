@@ -27,6 +27,10 @@ class MockAIProvider(BaseAIProvider):
     def display_name(self) -> str:
         return "Phase 1 Simulation Provider (Single-Residence & Antigravity Priority Enforced)"
 
+    @property
+    def loaded_model(self) -> Optional[str]:
+        return self._loaded_model
+
     async def is_available(self) -> bool:
         return True
 

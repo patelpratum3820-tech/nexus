@@ -66,22 +66,25 @@ class TestPhase16MaintenanceFixes(unittest.TestCase):
         self.assertEqual(res.json()["limits"]["max_cpu_percent"], 75.0)
         self.assertEqual(res.json()["limits"]["min_ram_gb"], 3.0)
 
-        # Invalid CPU: > 95%
-        res_cpu_high = self.client.post("/api/resources/limits", json={"max_cpu_percent": 99.9})
+        # Invalid CPU: > 80% (weaker than hard safety boundary)
+        res_cpu_high = self.client.post("/api/resources/limits", json={"max_cpu_percent": 95.0})
         self.assertEqual(res_cpu_high.status_code, 400)
         self.assertIn("max_cpu_percent", res_cpu_high.json()["detail"])
 
-        # Invalid CPU: < 50%
-        res_cpu_low = self.client.post("/api/resources/limits", json={"max_cpu_percent": 40.0})
+        # Invalid CPU: < 40%
+        res_cpu_low = self.client.post("/api/resources/limits", json={"max_cpu_percent": 30.0})
         self.assertEqual(res_cpu_low.status_code, 400)
 
-        # Invalid RAM: < 1.0 GB
+        # Invalid RAM: < 2.0 GB (1.0 GB weakens hard safety reserve)
+        res_ram_1gb = self.client.post("/api/resources/limits", json={"min_ram_gb": 1.0})
+        self.assertEqual(res_ram_1gb.status_code, 400)
+        self.assertIn("min_ram_gb", res_ram_1gb.json()["detail"])
+
         res_ram_low = self.client.post("/api/resources/limits", json={"min_ram_gb": 0.5})
         self.assertEqual(res_ram_low.status_code, 400)
-        self.assertIn("min_ram_gb", res_ram_low.json()["detail"])
 
-        # Invalid RAM: > 6.0 GB
-        res_ram_high = self.client.post("/api/resources/limits", json={"min_ram_gb": 8.0})
+        # Invalid RAM: > 8.0 GB
+        res_ram_high = self.client.post("/api/resources/limits", json={"min_ram_gb": 9.0})
         self.assertEqual(res_ram_high.status_code, 400)
 
         # Invalid tasks: < 1
