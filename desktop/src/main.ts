@@ -4,6 +4,7 @@ import { ProcessManager } from './processManager';
 
 let mainWindow: BrowserWindow | null = null;
 let companionWindow: BrowserWindow | null = null;
+let isExplicitQuitting = false;
 const processMgr = new ProcessManager();
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
@@ -39,12 +40,20 @@ async function createMainWindow() {
   });
 
   mainWindow.on('close', (event) => {
-    // If companion is disabled or full exit requested, quit app
-    if (!companionWindow || companionWindow.isDestroyed()) {
-      app.quit();
+    // If explicit exit requested, allow window to close and destroy
+    if (isExplicitQuitting) {
+      return;
+    }
+
+    // If companion is active and enabled, hide to companion instead of destroying window
+    if (companionWindow && !companionWindow.isDestroyed()) {
+      event.preventDefault();
+      mainWindow?.hide();
+      console.log('[Main] Main window hidden to Dynamic Island companion.');
     } else {
-      // Allow minimizing to companion if companion enabled
-      // but ensure user can choose full exit
+      // If companion is unavailable, full exit
+      isExplicitQuitting = true;
+      app.quit();
     }
   });
 
@@ -110,7 +119,9 @@ ipcMain.handle('system:metrics', async () => {
 });
 
 ipcMain.on('app:exit', async () => {
+  if (isExplicitQuitting) return;
   console.log('[Main] Explicit app exit requested by user.');
+  isExplicitQuitting = true;
   await processMgr.stopAll();
   app.quit();
 });
@@ -120,12 +131,16 @@ ipcMain.on('app:minimize', () => {
 });
 
 ipcMain.on('companion:toggle', () => {
-  if (mainWindow) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
     if (mainWindow.isMinimized()) {
       mainWindow.restore();
     }
-    mainWindow.show();
+    if (!mainWindow.isVisible()) {
+      mainWindow.show();
+    }
     mainWindow.focus();
+  } else {
+    createMainWindow();
   }
 });
 
@@ -152,6 +167,7 @@ app.whenReady().then(async () => {
 
 // Clean exit handlers
 app.on('before-quit', async () => {
+  isExplicitQuitting = true;
   await processMgr.stopAll();
 });
 

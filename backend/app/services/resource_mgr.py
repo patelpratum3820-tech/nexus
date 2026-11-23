@@ -14,6 +14,7 @@ from app.core.config import (
     RESOURCE_SAMPLE_INTERVAL_SEC,
     RESOURCE_IDLE_SAMPLE_INTERVAL_SEC
 )
+from app.db.database import get_setting, set_setting
 
 class _MEMORYSTATUSEX(ctypes.Structure):
     _fields_ = [
@@ -56,6 +57,63 @@ class ResourceManager:
             "timestamp": time.time()
         }
         self._monitor_task: Optional[asyncio.Task] = None
+        # Load user-configured limits from SQLite, falling back to safe defaults
+        self._load_persisted_settings()
+
+    def _load_persisted_settings(self):
+        """Load user-configured limits from SQLite, preserving safe defaults."""
+        try:
+            persisted_cpu = get_setting("max_cpu_percent")
+            if persisted_cpu:
+                val = float(persisted_cpu)
+                if 50.0 <= val <= 95.0:
+                    self.max_cpu_limit = val
+
+            persisted_ram = get_setting("min_ram_limit_gb")
+            if persisted_ram:
+                val = float(persisted_ram)
+                if 1.0 <= val <= 6.0:
+                    self.min_ram_limit_gb = val
+
+            persisted_tasks = get_setting("max_concurrent_tasks")
+            if persisted_tasks:
+                val = int(persisted_tasks)
+                if 1 <= val <= 4:
+                    self.max_concurrent_tasks = val
+        except Exception:
+            pass
+
+    def update_and_persist_limits(
+        self,
+        max_cpu_percent: Optional[float] = None,
+        min_ram_gb: Optional[float] = None,
+        max_concurrent_tasks: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """Validate, apply, and persist resource thresholds."""
+        if max_cpu_percent is not None:
+            if not (50.0 <= max_cpu_percent <= 95.0):
+                raise ValueError(f"max_cpu_percent must be between 50.0 and 95.0, got {max_cpu_percent}")
+            self.max_cpu_limit = float(max_cpu_percent)
+            set_setting("max_cpu_percent", str(self.max_cpu_limit))
+
+        if min_ram_gb is not None:
+            if not (1.0 <= min_ram_gb <= 6.0):
+                raise ValueError(f"min_ram_gb must be between 1.0 and 6.0, got {min_ram_gb}")
+            self.min_ram_limit_gb = float(min_ram_gb)
+            set_setting("min_ram_limit_gb", str(self.min_ram_limit_gb))
+
+        if max_concurrent_tasks is not None:
+            if not (1 <= max_concurrent_tasks <= 4):
+                raise ValueError(f"max_concurrent_tasks must be between 1 and 4, got {max_concurrent_tasks}")
+            self.max_concurrent_tasks = int(max_concurrent_tasks)
+            set_setting("max_concurrent_tasks", str(self.max_concurrent_tasks))
+
+        return {
+            "max_cpu_percent": self.max_cpu_limit,
+            "min_ram_gb": self.min_ram_limit_gb,
+            "max_concurrent_tasks": self.max_concurrent_tasks,
+            "active_workers": self.active_workers
+        }
 
     @classmethod
     def get_instance(cls) -> "ResourceManager":

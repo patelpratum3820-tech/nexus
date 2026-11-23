@@ -55,8 +55,8 @@ class BaseAIProvider(ABC):
         pass
 
     @abstractmethod
-    async def load_model(self, model_name: str) -> bool:
-        """Explicitly load a model into memory."""
+    async def load_model(self, model_name: str, is_explicit_confirmation: bool = False) -> Dict[str, Any]:
+        """Explicitly load a model into memory. Returns structured status dictionary."""
         pass
 
     @abstractmethod

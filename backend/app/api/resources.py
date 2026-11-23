@@ -1,7 +1,7 @@
 """
 Resource management endpoints for NEXUS.
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.services.resource_mgr import ResourceManager
@@ -34,10 +34,12 @@ def get_limits():
 
 @router.post("/limits")
 def update_limits(req: LimitUpdateRequest):
-    if req.max_cpu_percent is not None:
-        mgr.max_cpu_limit = req.max_cpu_percent
-    if req.min_ram_gb is not None:
-        mgr.min_ram_limit_gb = req.min_ram_gb
-    if req.max_concurrent_tasks is not None:
-        mgr.max_concurrent_tasks = req.max_concurrent_tasks
-    return {"status": "updated", "limits": get_limits()}
+    try:
+        updated = mgr.update_and_persist_limits(
+            max_cpu_percent=req.max_cpu_percent,
+            min_ram_gb=req.min_ram_gb,
+            max_concurrent_tasks=req.max_concurrent_tasks
+        )
+        return {"status": "updated", "limits": updated}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

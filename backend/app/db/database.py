@@ -107,3 +107,41 @@ def init_db() -> None:
             event_type TEXT DEFAULT 'heartbeat'
         );
         """)
+
+        # Persistent System Settings Store
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS system_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+
+def get_setting(key: str, default: str = None) -> str:
+    """Retrieve a persistent setting by key."""
+    try:
+        with get_db_cursor() as cursor:
+            cursor.execute("SELECT value FROM system_settings WHERE key = ?", (key,))
+            row = cursor.fetchone()
+            if row:
+                return row["value"]
+    except Exception:
+        pass
+    return default
+
+
+def set_setting(key: str, value: str) -> bool:
+    """Persist or update a setting by key."""
+    try:
+        with get_db_cursor() as cursor:
+            cursor.execute("""
+            INSERT INTO system_settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(key) DO UPDATE SET
+                value = excluded.value,
+                updated_at = CURRENT_TIMESTAMP
+            """, (key, str(value)))
+            return True
+    except Exception:
+        return False
